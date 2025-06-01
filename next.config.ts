@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     // Allow data URLs and local images to be displayed unoptimized
     unoptimized: true,
   },
+  // Ensure that Next.js serves the pdf-outputs directory as static files
+  // even if they are generated at runtime
+  outputFileTracing: true,
+  output: 'standalone',
 };
 
 export default nextConfig;
