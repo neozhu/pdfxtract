@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Runner stage
-FROM node:22-slim AS runner
+FROM node:22-alpine AS runner
 
 # Install system dependencies for pdf2pic
 RUN apt-get update && \

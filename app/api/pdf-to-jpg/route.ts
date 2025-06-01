@@ -70,7 +70,7 @@ export async function POST(request: Request) {
           const numB = parseInt(b.match(/(\d+)/)?.[1] || '0', 10);
           return numA - numB;
         });
-      const imagePaths = files.map(f => `/pdf-outputs/${baseName}/${f}`);
+      const imagePaths = files.map(f => `/api/pdf-outputs/${baseName}/${f}`);
 
       // 返回图片路径数组（web 可访问路径）
       return NextResponse.json({ imagePaths });
