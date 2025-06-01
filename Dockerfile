@@ -1,5 +1,5 @@
 # Use official Node.js image as the base
-FROM node:20-bullseye
+FROM node:node:22-alpine
 
 # Install system dependencies for pdf2pic
 RUN apt-get update && \
