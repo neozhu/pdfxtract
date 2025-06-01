@@ -2,6 +2,9 @@
 
 PDFxtract is a modern web application built with Next.js that allows users to upload PDF files and automatically convert each page into JPG images for easy preview and download.
 
+
+![](/public/screen.png)
+
 ## Features
 
 - Upload PDF files via a simple web interface
@@ -52,6 +55,42 @@ lib/                # Utility functions
 - Start production server: `npm start`
 - Recommended deployment: [Vercel](https://vercel.com/)
 
+
+## Docker Deployment
+
+### Build Image
+
+```bash
+docker build -t pdfxtract:v0.4 .
+```
+
+### Run Container
+
+```bash
+docker run -d -p 4012:3000 \
+  -e NODE_ENV=production \
+  -e NEXT_PUBLIC_GA_ID=<your tag id> \
+  --name pdfxtract \
+  pdfxtract:v0.4
+```
+
+### Docker Compose Example
+
+```yaml
+version: '3.8'
+
+services:
+  pdfxtract:
+    image: pdfxtract:v0.4
+    ports:
+      - "4012:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_GA_ID=<your tag id>
+    restart: unless-stopped
+```
+
+
 ## Tech Stack
 
 - [Next.js](https://nextjs.org/)
@@ -61,3 +100,4 @@ lib/                # Utility functions
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
+
