@@ -11,7 +11,7 @@ export async function GET(
     return new NextResponse('Not Found', { status: 404 });
   }
   const stream = createReadStream(filePath);
-  return new NextResponse(stream as any, {
+  return new NextResponse(stream as unknown as BodyInit, {
     headers: { 'Content-Type': 'image/jpeg' }
   });
 }
