@@ -1,11 +1,11 @@
 # Build stage
-FROM node:22-alpine AS builder
+FROM node:22-slim AS builder
 
 # Set working directory
 WORKDIR /app
 
 # Copy package.json and lock file
-COPY package.json* yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+COPY package.json* package-lock.json*  ./
 
 # Install dependencies
 RUN npm install
