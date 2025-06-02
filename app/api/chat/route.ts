@@ -37,7 +37,10 @@ export async function POST(req: Request) {
     ],
   });   console.log("AI response:", result.text);
 
-  const cleanText = result.text.replace(/```/g, '');
+  
+  const cleanText = result.text
+    .replace(/^```[a-zA-Z]*\n/, '') 
+    .replace(/\n```$/, '');         
   
   // Return a proper JSON response with the AI-generated text
   return new Response(JSON.stringify({ content: cleanText }), {
