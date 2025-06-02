@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 interface PDFImageHeaderProps {
   file: File | null;
@@ -81,7 +82,8 @@ export function PDFImageHeader({
         size="sm"
         variant="outline"
       >
-        {downloadingZip ? "Creating ZIP..." : "⬇️ Download ZIP"}
+        <Download className="mr-1 h-4 w-4" />
+        {downloadingZip ? "Creating ZIP..." : "Download ZIP"}
       </Button>
     </div>
   );

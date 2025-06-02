@@ -25,7 +25,17 @@ export async function POST(req: Request) {
         content: [
           {
             type: 'text',
-            text: 'Transcribe all visible text from the uploaded image. Reproduce the content faithfully using Markdown syntax, meticulously preserving the original visual layout, spacing, and alignment of all elements. This includes maintaining: \n- Exact line breaks\n- Indentation levels\n- Relative positioning of text blocks\n- Columnar structures (if any)\n- Any specific spacing between words, lines, or paragraphs\n\nApply all original formatting (e.g., bold, italics, headings, lists, tables) precisely as shown. Provide only the Markdown output, without any additional explanations, commentary, or reasoning.',
+            text: `Transcribe all visible text from the uploaded image into Markdown, precisely replicating the original visual layout and formatting. This includes:
+
+* Exact line breaks
+* Indentation and alignment
+* Relative positions of text blocks
+* Column and table structures
+* Original spacing between words, lines, and paragraphs
+* Accurate application of all formatting (bold, italics, headings, lists, tables, code, etc.)
+
+Do not use a Markdown code block to wrap the entire output. Output only the direct Markdown content—no explanations, commentary, or reasoning.
+`.trim(),
           },
           {
             type: 'image',
@@ -35,12 +45,12 @@ export async function POST(req: Request) {
         ],
       },
     ],
-  });   console.log("AI response:", result.text);
+  });   
+  
+  console.log("AI response:\n\n", result.text);
 
   
-  const cleanText = result.text
-    .replace(/^```[a-zA-Z]*\n/, '') 
-    .replace(/\n```$/, '');         
+  const cleanText = result.text;   
   
   // Return a proper JSON response with the AI-generated text
   return new Response(JSON.stringify({ content: cleanText }), {

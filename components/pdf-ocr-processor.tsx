@@ -7,9 +7,10 @@ import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex'
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
+import rehypePrismPlus from "rehype-prism-plus";
 import './markdown-styles.css';
-
-
+import 'katex/dist/katex.min.css';
+import 'prismjs/themes/prism.css'
 interface PDFOcrProcessorProps {
   images: string[];
   file: File | null;
@@ -112,7 +113,7 @@ export function PDFOcrProcessor({ images, file, onError }: PDFOcrProcessorProps)
       {markdownContent && (
         <div className="flex flex-col space-y-2">
           <div className="markdown-content">
-            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeKatex]}>{markdownContent}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeKatex,[rehypePrismPlus, { showLineNumbers: true, ignoreMissing: true }]]}>{markdownContent}</Markdown>
           </div>
 
           <Button 
