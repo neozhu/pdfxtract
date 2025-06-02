@@ -13,6 +13,7 @@ import { PDFFileUploader } from "@/components/pdf-file-uploader";
 import { PDFConversionSettings } from "@/components/pdf-conversion-settings";
 import { PDFImageHeader } from "@/components/pdf-image-header";
 import { PDFImageCarousel } from "@/components/pdf-image-carousel";
+import { PDFOcrProcessor } from "@/components/pdf-ocr-processor";
 
 // Maximum file size in bytes (50MB)
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
@@ -98,15 +99,14 @@ export function PDFXtract() {
     }
   };
 
-
-
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>PDF to JPG Converter</CardTitle>
+        <CardTitle>PDF to JPG Converter with OCR</CardTitle>
         <CardDescription>
           Upload a PDF file to convert and extract pages as JPG images (max{" "}
-          {MAX_FILE_SIZE / (1024 * 1024)}MB).
+          {MAX_FILE_SIZE / (1024 * 1024)}MB), perform OCR, and get markdown
+          output.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -118,7 +118,9 @@ export function PDFXtract() {
             file={file}
             pageCount={pageCount}
           />
-          {error && <p className="mt-2 text-red-500">{error}</p>}          {/* Conversion Settings */}
+          {error && <p className="mt-2 text-red-500">{error}</p>}
+
+          {/* Conversion Settings */}
           {file && (
             <PDFConversionSettings
               quality={quality}
@@ -128,15 +130,25 @@ export function PDFXtract() {
               progress={progress}
             />
           )}
-          {/* Image Previews */}
+          
+          {/* Image Previews and OCR Processor */}
           {images.length > 0 && (
-            <div className="space-y-4">
-              <PDFImageHeader
-                file={file}
+            <div className="flex flex-col space-y-4">
+              <div className="space-y-4">
+                <PDFImageHeader
+                  file={file}
+                  images={images}
+                  onError={handleError}
+                />
+                <PDFImageCarousel images={images} />
+              </div>
+              
+              {/* OCR Processor Component */}
+              <PDFOcrProcessor
                 images={images}
+                file={file}
                 onError={handleError}
               />
-              <PDFImageCarousel images={images} />
             </div>
           )}
         </div>
