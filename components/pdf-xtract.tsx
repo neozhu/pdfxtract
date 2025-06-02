@@ -104,9 +104,7 @@ export function PDFXtract() {
       <CardHeader>
         <CardTitle>PDF to JPG Converter with OCR</CardTitle>
         <CardDescription>
-          Upload a PDF file to convert and extract pages as JPG images (max{" "}
-          {MAX_FILE_SIZE / (1024 * 1024)}MB), perform OCR, and get markdown
-          output.
+          Upload a scanned PDF document (max {MAX_FILE_SIZE / (1024 * 1024)}MB). Each page will be automatically converted to high-quality JPEG images, and advanced AI-powered OCR will extract and output the recognized text in Markdown format.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -130,7 +128,7 @@ export function PDFXtract() {
               progress={progress}
             />
           )}
-          
+
           {/* Image Previews and OCR Processor */}
           {images.length > 0 && (
             <div className="flex flex-col space-y-4">
@@ -142,7 +140,7 @@ export function PDFXtract() {
                 />
                 <PDFImageCarousel images={images} />
               </div>
-              
+
               {/* OCR Processor Component */}
               <PDFOcrProcessor
                 images={images}

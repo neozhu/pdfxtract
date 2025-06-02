@@ -1,6 +1,6 @@
 # PDFxtract
 
-PDFxtract is a modern web application built with Next.js that allows users to upload PDF files and automatically convert each page into JPG images for easy preview and download.
+PDFxtract is a modern web application built with Next.js for processing scanned PDF documents. It is designed to accurately extract text information from images within scanned PDFs using advanced OCR (Optical Character Recognition) technology. Each page of a scanned PDF is automatically converted into a high-quality JPEG image, and AI-powered OCR is applied to precisely recognize and extract the textual content, outputting the results in Markdown format for easy use and further editing.
 
 
 ![](/public/screen.png)
