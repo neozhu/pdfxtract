@@ -6,7 +6,7 @@ import Markdown from "react-markdown";
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex'
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
+import { Info,Loader2Icon } from "lucide-react";
 import rehypePrismPlus from "rehype-prism-plus";
 import './markdown-styles.css';
 import 'katex/dist/katex.min.css';
@@ -106,8 +106,11 @@ export function PDFOcrProcessor({ images, file, onError }: PDFOcrProcessorProps)
           className="w-full"
         >
           {isOcrProcessing
-            ? `Processing OCR... (${currentImageIndex + 1}/${Math.min(images.length, MAX_PAGES)})`
-            : "Extract Text with OCR (Gemini AI)"}
+            ? <>
+                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> 
+                Processing... ({currentImageIndex + 1}/{Math.min(images.length, MAX_PAGES)})
+              </>
+            : "Extract Text with OCR"}
         </Button>
       </div>      {/* Markdown Content Display */}
       {markdownContent && (
