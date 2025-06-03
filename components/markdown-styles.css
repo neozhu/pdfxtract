@@ -47,18 +47,7 @@
   list-style-type: decimal;
 }
 
-.markdown-content ul li,
-.markdown-content ol li {
-  line-height: 0.615rem; 
-}
 
-
-.markdown-content ul li ul,
-.markdown-content ol li ul,
-.markdown-content ul li ol,
-.markdown-content ol li ol {
-  line-height: 0.875rem; 
-}
 
 .markdown-content code:not(pre > code) {
   background-color: #f0f2f5;
