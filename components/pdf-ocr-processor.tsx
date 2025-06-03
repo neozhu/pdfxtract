@@ -30,7 +30,7 @@ export function PDFOcrProcessor({ images, file, onError }: PDFOcrProcessorProps)
   const { complete } = useCompletion({
     api: '/api/chat',
     onFinish: (prompt, completeResponse) => {
-      setMarkdownContent((prevContent) => prevContent + completeResponse);
+      setMarkdownContent((prevContent) => prevContent ? prevContent + "\n\n" + completeResponse : completeResponse);
       // Only set the current index to the next one, actual processing is handled by useEffect
       setCurrentImageIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
