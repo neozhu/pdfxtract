@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Markdown from "react-markdown";
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex'
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info,Loader2Icon } from "lucide-react";
+import { Info, Loader2Icon } from "lucide-react";
 import rehypePrismPlus from "rehype-prism-plus";
 import './markdown-styles.css';
 import 'katex/dist/katex.min.css';
 import 'prismjs/themes/prism.css'
+import { useCompletion } from '@ai-sdk/react';
+
+
 interface PDFOcrProcessorProps {
   images: string[];
   file: File | null;
@@ -21,57 +24,59 @@ export function PDFOcrProcessor({ images, file, onError }: PDFOcrProcessorProps)
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const [markdownContent, setMarkdownContent] = useState<string>("");
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const MAX_PAGES = 3; // Maximum number of pages to process
-
-
-  // Process a single image using fetch instead of useChat
-  const processCurrentImage = useCallback(async (index: number) => {
-    try {
-      const imageUrl = images[index];
-      // Call the API using fetch
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messages: [{ role: 'user', content: imageUrl }]
-        })
+  // Use useCompletion to handle streaming responses
+  const { complete } = useCompletion({
+    api: '/api/chat',
+    onFinish: (prompt, completeResponse) => {
+      setMarkdownContent((prevContent) => prevContent + completeResponse);
+      // Only set the current index to the next one, actual processing is handled by useEffect
+      setCurrentImageIndex((prevIndex) => {
+        const nextIndex = prevIndex + 1;
+        if (nextIndex >= images.length || nextIndex >= MAX_PAGES) {
+          // All pages processed
+         setIsOcrProcessing(false);
+        }
+        return nextIndex < images.length && nextIndex < MAX_PAGES ? nextIndex : prevIndex;
       });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
-      }
-
-      const { content } = await response.json();
-
-      // Update the combined markdown content
-      setMarkdownContent(prev => prev + (prev ? '\n\n' : '') + content);      // Process the next image (limited to MAX_PAGES)
-      const nextIndex = index + 1;
-      if (nextIndex < images.length && nextIndex < MAX_PAGES) {
-        setCurrentImageIndex(nextIndex);
-        processCurrentImage(nextIndex);      } else {
-        setIsOcrProcessing(false);
-      }
-    } catch (error: Error | unknown) {
+    },
+    onError: (error) => {
       console.error("Error processing image:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      onError(`Error processing image ${index + 1}: ${errorMessage}`);
+      const errorMsg = `Error processing image ${currentImageIndex + 1}: ${error.message}`;
+      setErrorMessage(errorMsg);
+      onError(errorMsg);
+      setIsOcrProcessing(false);
     }
-  }, [images, onError]);
+  });
+
+  const processNextImage = useCallback(async (index: number) => {
+    const imageUrl = images[index];
+    await complete(imageUrl);
+  }, [images, complete]);
+
+  // Listen for currentImageIndex changes to process the next page
+  useEffect(() => {
+    if (isOcrProcessing && currentImageIndex > 0) {
+      // Only process during OCR and not at the initial index
+      console.log(`Effect triggered: Processing image at index ${currentImageIndex}`);
+      processNextImage(currentImageIndex);
+    }
+  }, [currentImageIndex, isOcrProcessing]);
 
   // Start OCR processing for all images
-  const performOcr = async () => {
+  const performOcr = useCallback(async () => {
     if (images.length === 0) return;
-
+    console.log("Starting OCR processing for images:", images);
     setIsOcrProcessing(true);
     setMarkdownContent("");
     setCurrentImageIndex(0);
+    setErrorMessage(null);
     onError(null);
+    processNextImage(0);
+  }, [images, onError, processNextImage, setIsOcrProcessing, setMarkdownContent, setCurrentImageIndex, setErrorMessage]);
 
-    // Start with the first image
-    processCurrentImage(0);
-  };
+
 
   // Function to download markdown content
   const downloadMarkdown = () => {
@@ -87,17 +92,18 @@ export function PDFOcrProcessor({ images, file, onError }: PDFOcrProcessorProps)
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
   return (
     <div className="flex flex-col space-y-4">
-      {/* Info Alert */}      
+      {/* Info Alert */}
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          To optimize token usage, only the first {MAX_PAGES} pages will be processed. 
+          To optimize token usage, only the first {MAX_PAGES} pages will be processed.
           This helps reduce API costs and speeds up processing.
         </AlertDescription>
       </Alert>
-      
+
       {/* OCR Button */}
       <div className="flex justify-between items-center ">
         <Button
@@ -107,28 +113,38 @@ export function PDFOcrProcessor({ images, file, onError }: PDFOcrProcessorProps)
         >
           {isOcrProcessing
             ? <>
-                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> 
-                Processing... ({currentImageIndex + 1}/{Math.min(images.length, MAX_PAGES)})
-              </>
+              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+              Processing... ({currentImageIndex + 1}/{Math.min(images.length, MAX_PAGES)})
+            </>
             : "Extract Text with OCR"}
         </Button>
-      </div>      {/* Markdown Content Display */}
+      </div>
+
+      {/* Markdown Content Display - 显示流式内容 */}
       {markdownContent && (
         <div className="flex flex-col space-y-2">
           <div className="markdown-content">
-            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeKatex,[rehypePrismPlus, { showLineNumbers: true, ignoreMissing: true }]]}>{markdownContent}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeKatex, [rehypePrismPlus, { showLineNumbers: true, ignoreMissing: true }]]}>{markdownContent}</Markdown>
           </div>
 
-          <Button 
-            onClick={downloadMarkdown} 
-            className="mt-4" 
+          <Button
+            onClick={downloadMarkdown}
+            className="mt-4"
             disabled={isOcrProcessing}
           >
             {isOcrProcessing ? "Waiting..." : "Download Markdown"}
           </Button>
         </div>
       )}
+
       {/* Error Messages */}
+      {errorMessage && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertDescription>
+            {errorMessage}
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

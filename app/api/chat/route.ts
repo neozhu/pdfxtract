@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
+import { streamText } from 'ai';
 import fs from 'fs';
 import path from 'path';
 
@@ -7,9 +7,10 @@ import path from 'path';
 export const maxDuration = 30;
 const GEMINI_MODEL = "gemini-2.5-flash-preview-05-20"
 export async function POST(req: Request) {
-  const { messages } = await req.json();
-  const { content } = messages[messages.length - 1]; // 获取最后一条消息
+  const {prompt} = await req.json();
+  console.log("Request body:", prompt);
 
+  const content = prompt; // Assuming content is directly in the request body
   // Extract the image path from content
   const imagePath = content.startsWith('/api/pdf-outputs/')
     ? content.replace('/api/pdf-outputs/', '')
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
   // Read the image file from public directory
   const imageData = fs.readFileSync(path.join(process.cwd(), 'public', 'pdf-outputs', imagePath));
   console.log("Image data length:", imageData.length);
-  const result = await generateText({
+  const result = await streamText({
     model: google(GEMINI_MODEL),
     messages: [
       {
@@ -46,16 +47,16 @@ Do not use a Markdown code block to wrap the entire output. Output only the dire
       },
     ],
   });   
-  
-  console.log("AI response:\n\n", result.text);
+  return result.toDataStreamResponse({sendReasoning:false});
+  //console.log("AI response:\n\n", result.text);
 
   
-  const cleanText = result.text;   
+  //const cleanText = result.text;   
   
   // Return a proper JSON response with the AI-generated text
-  return new Response(JSON.stringify({ content: cleanText }), {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
+  // return new Response(JSON.stringify({ content: cleanText }), {
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   }
+  // });
 }
