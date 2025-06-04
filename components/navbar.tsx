@@ -44,10 +44,9 @@ const Navbar = ({
         {/* Desktop Menu */}
         <nav className="hidden justify-between lg:flex">
           <div className="flex items-center gap-6">
-            {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
+            {/* Logo */}            <a href={logo.url} className="flex items-center gap-2">
               <Scan className="max-h-8" />
-              <span className="text-lg font-semibold tracking-tighter motion-safe:animate-in motion-safe:fade-in">
+              <span className="text-lg font-semibold tracking-tighter motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-20 motion-safe:duration-1200 motion-safe:delay-300">
                 {logo.title}
               </span>
             </a>

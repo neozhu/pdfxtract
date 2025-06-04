@@ -102,9 +102,15 @@ export function PDFXtract() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>PDF to JPG Converter with OCR</CardTitle>
+        <CardTitle>
+          <p className="motion-safe:animate-in motion-opacity-in-[0%] motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-500 motion-safe:ease-out motion-safe:from-0 motion-safe:to-1">
+            Advanced Document Digitization & Text Extraction Suite
+          </p>
+        </CardTitle>
         <CardDescription>
-          Upload a scanned PDF document (max {MAX_FILE_SIZE / (1024 * 1024)}MB). Each page will be automatically converted to high-quality JPEG images, and advanced AI-powered OCR will extract and output the recognized text in Markdown format.
+          <p className="motion-safe:animate-in motion-opacity-in-[0%] motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:delay-350 motion-safe:from-0 motion-safe:to-1">
+            Transform your scanned documents into digital assets with our professional PDF processing engine (supports up to {MAX_FILE_SIZE / (1024 * 1024)}MB). Our system renders each page as high-fidelity JPEG images while leveraging state-of-the-art optical character recognition technology to extract structured text content in clean Markdown format.
+          </p>
         </CardDescription>
       </CardHeader>
       <CardContent>
