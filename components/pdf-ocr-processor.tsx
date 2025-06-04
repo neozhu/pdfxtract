@@ -162,6 +162,14 @@ export function PDFOcrProcessor({
             </Markdown>
           </div>
 
+          {isOcrProcessing && (
+            <div className="space-y-2 mt-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-11/12" />
+              <Skeleton className="h-4 w-10/12" />
+            </div>
+          )}
+          
           <Button
             onClick={downloadMarkdown}
             className="mt-4"
@@ -169,14 +177,6 @@ export function PDFOcrProcessor({
           >
             {isOcrProcessing ? "Waiting..." : "Download Markdown"}
           </Button>
-        </div>
-      )}
-      
-      {isOcrProcessing && (
-        <div className="space-y-2 mt-2">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-11/12" />
-          <Skeleton className="h-4 w-10/12" />
         </div>
       )}
 
