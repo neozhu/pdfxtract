@@ -162,14 +162,14 @@ export function PDFOcrProcessor({
             </Markdown>
           </div>
 
-          {isOcrProcessing && (
+          {isOcrProcessing && currentImageIndex > 0 && (
             <div className="space-y-2 mt-2">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-11/12" />
               <Skeleton className="h-4 w-10/12" />
             </div>
           )}
-          
+
           <Button
             onClick={downloadMarkdown}
             className="mt-4"
@@ -180,6 +180,13 @@ export function PDFOcrProcessor({
         </div>
       )}
 
+      {isOcrProcessing && currentImageIndex == 0 && (
+        <div className="space-y-2 mt-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-11/12" />
+          <Skeleton className="h-4 w-10/12" />
+        </div>
+      )}
       {/* Error Messages */}
       {errorMessage && (
         <Alert variant="destructive" className="mt-4">
