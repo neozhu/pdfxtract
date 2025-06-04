@@ -103,7 +103,9 @@ export function PDFXtract() {
     <Card className="w-full">
       <CardHeader>
         <CardTitle>
-          <p className="motion-safe:animate-in motion-opacity-in-[0%] motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:duration-500 motion-safe:ease-out motion-safe:from-0 motion-safe:to-1">
+          <p
+            className="motion-safe:motion-opacity-in-[0%] motion-safe:motion-blur-in-[5px] motion-safe:motion-ease-spring-smooth"
+          >
             Advanced Document Digitization & Text Extraction Suite
           </p>
         </CardTitle>
