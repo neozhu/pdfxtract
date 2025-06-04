@@ -108,7 +108,7 @@ export default function TermsAndConditions() {
                     <div className="rounded-full p-1 bg-green-100 shrink-0 mt-0.5">
                       <Check className="h-3 w-3 text-green-600" />
                     </div>
-                    <span className="text-sm">Provided "as is" without warranty</span>
+                    <span className="text-sm">Provided &quot;as is&quot; without warranty</span>
                   </li>
                 </ul>
               </div>
@@ -159,7 +159,7 @@ export default function TermsAndConditions() {
                   <div>
                     <h3 className="font-medium text-yellow-800 mb-1">Disclaimer</h3>
                     <p className="text-sm text-yellow-700">
-                      PDFXtract is provided "as is" without warranty of any kind. 
+                      PDFXtract is provided &quot;as is&quot; without warranty of any kind. 
                       We are not liable for any damages resulting from your use of this service.
                     </p>
                   </div>

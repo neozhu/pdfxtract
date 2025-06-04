@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import Image from "next/image";
 import {
   Carousel,
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/card";
 // Import directly from lightGallery instead of React component
 import lightGallery from 'lightgallery';
-import { LightGallery as LGInstance } from 'lightgallery/lightgallery';
 
 // Lightgallery styles and plugins
 import 'lightgallery/css/lightgallery.css';
@@ -27,33 +26,13 @@ import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import lgZoom from 'lightgallery/plugins/zoom';
 import lgRotate from 'lightgallery/plugins/rotate'; // 导入旋转插件
 
-// 定义 TypeScript 接口以避免类型错误
-interface ZoomSettings {
-  scale?: number;
-  enableZoomAfter?: number;
-  actualSize?: boolean;
-}
-
-interface RotateSettings {
-  rotateLeft?: boolean;
-  rotateRight?: boolean;
-}
-
-interface ToolbarSettings {
-  showToolbar?: boolean;
-  buttons?: string[];
-}
-
-interface PDFImageCarouselProps {
-  images: string[];
-}
-
-export function PDFImageCarousel({ images }: PDFImageCarouselProps) {
+export function PDFImageCarousel({ images }: { images: string[] }) {
   const galleryContainerRef = useRef<HTMLDivElement>(null);
-  const lightGalleryInstance = useRef<any>(null);
+  // Use unknown type to avoid any lint warning
+  const lightGalleryInstance = useRef<unknown>(null);
   // Initialize lightGallery when component mounts
   useEffect(() => {
-    if (galleryContainerRef.current) {      // 使用 as any 来避免类型错误
+    if (galleryContainerRef.current) {
       const galleryOptions = {
         plugins: [lgZoom, lgThumbnail, lgRotate],
         dynamic: true,
@@ -62,36 +41,30 @@ export function PDFImageCarousel({ images }: PDFImageCarouselProps) {
           thumb: src,
           subHtml: `<h4>Page ${index + 1}</h4>`
         })),
-        
-        // 基本设置
+        // Basic settings
         download: false,
         closable: true, 
         showCloseIcon: true,
-        escKey: true,  // 允许 ESC 键关闭
-        fullScreen: true, // 允许全屏
-        counter: true,    // 显示计数器
-        
-        // 显示样式
+        escKey: true,  // Allow ESC key to close
+        fullScreen: true, // Allow fullscreen
+        counter: true,    // Show counter
+        // Display style
         addClass: 'lg-pdf-viewer',
         backdropDuration: 300,
-        mode: 'lg-fade',
-        
-        // 缩放设置
+        mode: 'lg-fade' as const,
+        // Zoom settings
         zoomFromOrigin: false,
-        
-        // 旋转相关
+        // Rotate settings
         flipHorizontal: true,
         flipVertical: true,
         rotateLeft: true,
         rotateRight: true,
-        
-        // 控制导航
+        // Navigation controls
         controls: true,
         enableDrag: true,
         enableSwipe: true,
-        mousewheel: true, // 鼠标滚轮支持
-        
-        // 高级设置
+        mousewheel: true, // Mouse wheel support
+        // Advanced settings
         mobileSettings: {
           controls: true,
           showCloseIcon: true,
@@ -99,24 +72,21 @@ export function PDFImageCarousel({ images }: PDFImageCarouselProps) {
           rotate: true
         }
       };
-
-      // 将选项强制转换为 any 类型以避免 TypeScript 错误
-      lightGalleryInstance.current = lightGallery(galleryContainerRef.current, galleryOptions as any);
+      // Only cast to any here
+      lightGalleryInstance.current = lightGallery(galleryContainerRef.current, galleryOptions);
     }
-    
     // Clean up lightGallery when component unmounts
     return () => {
-      if (lightGalleryInstance.current) {
-        lightGalleryInstance.current.destroy();
+      if (lightGalleryInstance.current && typeof (lightGalleryInstance.current as { destroy?: () => void }).destroy === 'function') {
+        (lightGalleryInstance.current as { destroy: () => void }).destroy();
       }
     };
   }, [images]);
 
   // Function to open lightgallery with a specific slide
   const openLightGallery = (index: number) => {
-    if (lightGalleryInstance.current) {
-      // Set starting index and open gallery
-      lightGalleryInstance.current.openGallery(index);
+    if (lightGalleryInstance.current && typeof (lightGalleryInstance.current as { openGallery?: (idx: number) => void }).openGallery === 'function') {
+      (lightGalleryInstance.current as { openGallery: (idx: number) => void }).openGallery(index);
     }
   };
 
@@ -124,7 +94,6 @@ export function PDFImageCarousel({ images }: PDFImageCarouselProps) {
     <>
       {/* Hidden container for lightGallery initialization */}
       <div ref={galleryContainerRef} className="hidden"></div>
-      
       <Carousel
         className="w-full relative"
         opts={{ dragFree: true, loop: false }}
@@ -133,10 +102,7 @@ export function PDFImageCarousel({ images }: PDFImageCarouselProps) {
           {images.map((imageDataUri, index) => (
             <CarouselItem
               key={index}
-              className={`pl-1 ${
-                // On mobile: 1 item per view, on desktop: 4 items per view
-                "md:basis-1/2 lg:basis-1/4"
-              }`}
+              className={`pl-1 md:basis-1/2 lg:basis-1/4`}
               onClick={() => openLightGallery(index)}
             >
               <div className="py-1">
