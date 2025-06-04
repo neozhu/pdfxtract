@@ -176,8 +176,8 @@ export function PDFFileUploader({ onFileSelect, onError, file: selectedFile, pag
                   <FileText className="h-8 w-8 text-muted-foreground flex-shrink-0" />
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="truncate">{fileItem.file.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm truncate">{fileItem.file.name}</p>
                       <Badge
                         variant={
                           fileItem.status === "completed"

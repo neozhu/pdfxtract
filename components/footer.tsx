@@ -29,40 +29,33 @@ const defaultSections = [
   {
     title: "Product",
     links: [
-      { name: "Overview", href: "#" },
-      { name: "Pricing", href: "#" },
-      { name: "Marketplace", href: "#" },
-      { name: "Features", href: "#" },
+      { name: "Overview", href: "https://github.com/neozhu/pdfxtract" },
+      { name: "Features", href: "https://github.com/neozhu/pdfxtract" },
     ],
   },
   {
     title: "Company",
     links: [
-      { name: "About", href: "#" },
-      { name: "Team", href: "#" },
-      { name: "Blog", href: "#" },
-      { name: "Careers", href: "#" },
+      { name: "About", href: "https://www.blazorserver.com/" },
+      { name: "Projects", href: "https://www.blazorserver.com/projects/" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { name: "Help", href: "#" },
-      { name: "Sales", href: "#" },
-      { name: "Advertise", href: "#" },
-      { name: "Privacy", href: "#" },
+      { name: "Help", href: "https://github.com/neozhu/pdfxtract/issues" },
     ],
   },
 ];
 
 const defaultLegalLinks = [
-  { name: "Terms and Conditions", href: "#" },
-  { name: "Privacy Policy", href: "#" },
+  { name: "Terms and Conditions", href: "/terms-and-conditions" },
+  { name: "Privacy Policy", href: "/privacy-policy" },
 ];
 
 const Footer = ({
   logo = {
-    url: "https://github.com/pdfxtract",
+    url: "/",
     src: "/file.svg",
     alt: "logo",
     title: "PDFXtract",
@@ -99,7 +92,7 @@ const Footer = ({
                       key={linkIdx}
                       className="font-medium hover:text-primary"
                     >
-                      <a href={link.href}>{link.name}</a>
+                      <a href={link.href} target="_blank">{link.name}</a>
                     </li>
                   ))}
                 </ul>

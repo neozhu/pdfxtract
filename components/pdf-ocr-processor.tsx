@@ -162,31 +162,27 @@ export function PDFOcrProcessor({
             </Markdown>
           </div>
 
-          {isOcrProcessing && currentImageIndex > 0 && (
-            <div className="space-y-2 mt-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-11/12" />
-              <Skeleton className="h-4 w-10/12" />
-            </div>
-          )}
+       
 
-          <Button
-            onClick={downloadMarkdown}
-            className="mt-4"
-            disabled={isOcrProcessing}
-          >
-            {isOcrProcessing ? "Waiting..." : "Download Markdown"}
-          </Button>
+            
         </div>
       )}
 
-      {isOcrProcessing && currentImageIndex == 0 && (
+      {isOcrProcessing && (
         <div className="space-y-2 mt-2">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-11/12" />
           <Skeleton className="h-4 w-10/12" />
         </div>
       )}
+      {!isOcrProcessing && markdownContent && (
+            <Button
+              onClick={downloadMarkdown}
+              className="mt-4"
+            >
+              Download Markdown
+            </Button>
+            )}
       {/* Error Messages */}
       {errorMessage && (
         <Alert variant="destructive" className="mt-4">
