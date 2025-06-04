@@ -47,7 +47,7 @@ const Navbar = ({
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
               <Scan className="max-h-8" />
-              <span className="text-lg font-semibold tracking-tighter">
+              <span className="text-lg font-semibold tracking-tighter motion-safe:animate-in motion-safe:fade-in">
                 {logo.title}
               </span>
             </a>

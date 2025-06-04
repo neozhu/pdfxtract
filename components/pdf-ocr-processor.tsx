@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import Markdown from "react-markdown";
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex'
@@ -111,14 +112,24 @@ export function PDFOcrProcessor({ images, file, onError }: PDFOcrProcessorProps)
           disabled={isOcrProcessing}
           className="w-full"
         >
-          {isOcrProcessing
-            ? <>
+          {isOcrProcessing ? (
+            <>
               <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
               Processing... ({currentImageIndex + 1}/{Math.min(images.length, MAX_PAGES)})
             </>
-            : "Extract Text with OCR"}
+          ) : (
+            "Run OCR Extraction"
+          )}
         </Button>
       </div>
+
+      {isOcrProcessing && !markdownContent && (
+        <div className="space-y-2 mt-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-11/12" />
+          <Skeleton className="h-4 w-10/12" />
+        </div>
+      )}
 
       {/* Markdown Content Display - 显示流式内容 */}
       {markdownContent && (

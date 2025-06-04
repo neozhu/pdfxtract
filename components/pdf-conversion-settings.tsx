@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Helper function to get status text based on progress
 const getProgressStatus = (progress: number): string => {
@@ -72,7 +73,11 @@ export function PDFConversionSettings({
             <span>{getProgressStatus(progress)}</span>
             <span>{progress}%</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          {progress < 100 ? (
+            <Progress value={progress} className="h-2" />
+          ) : (
+            <Skeleton className="h-2 w-full" />
+          )}
         </div>
       )}
     </div>
