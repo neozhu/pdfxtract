@@ -5,7 +5,8 @@ import path from 'path';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
-const GEMINI_MODEL = "gemini-2.5-pro-preview-05-06"
+// Get model from environment variable or use default
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-pro"
 export async function POST(req: Request) {
   const {prompt} = await req.json();
   console.log("Request body:", prompt);
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
 * Original spacing between words, lines, and paragraphs
 * Accurate application of all formatting (bold, italics, headings, lists, tables, code, etc.)
 
-Output only the direct Markdown content—no introductions, no explanations, no commentary.
+Do NOT wrap the output in any code blocks (such as ormarkdown). Output plain Markdown only, with no additional formatting or wrappers.
 `.trim(),
           },
           {
