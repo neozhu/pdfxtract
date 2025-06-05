@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 * Original spacing between words, lines, and paragraphs
 * Accurate application of all formatting (bold, italics, headings, lists, tables, code, etc.)
 
-Do not use a Markdown code block to wrap the entire output. Output only the direct Markdown content—no explanations, commentary, or reasoning.
+Output only the direct Markdown content—no introductions, no explanations, no commentary.
 `.trim(),
           },
           {
