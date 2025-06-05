@@ -6,10 +6,10 @@ import path from 'path';
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 // Get model from environment variable or use default
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-pro"
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash"
 export async function POST(req: Request) {
   const {prompt} = await req.json();
-  console.log("Request body:", prompt);
+  console.log('GEMINI_MODEL:',GEMINI_MODEL);
 
   const content = prompt; // Assuming content is directly in the request body
   // Extract the image path from content
@@ -50,15 +50,4 @@ Do NOT wrap the output in any code blocks (such as ormarkdown). Output plain Mar
     ],
   });   
   return result.toDataStreamResponse({sendReasoning:false});
-  //console.log("AI response:\n\n", result.text);
-
-  
-  //const cleanText = result.text;   
-  
-  // Return a proper JSON response with the AI-generated text
-  // return new Response(JSON.stringify({ content: cleanText }), {
-  //   headers: {
-  //     'Content-Type': 'application/json'
-  //   }
-  // });
 }
