@@ -71,10 +71,6 @@ export function PDFOcrProcessor({
   // Listen for currentImageIndex changes to process the next page
   useEffect(() => {
     if (isOcrProcessing && currentImageIndex > 0) {
-      // Only process during OCR and not at the initial index
-      console.log(
-        `Effect triggered: Processing image at index ${currentImageIndex}`
-      );
       processNextImage(currentImageIndex);
     }
   }, [currentImageIndex, isOcrProcessing]);
@@ -82,7 +78,6 @@ export function PDFOcrProcessor({
   // Start OCR processing for all images
   const performOcr = useCallback(async () => {
     if (images.length === 0) return;
-    console.log("Starting OCR processing for images:", images);
     setIsOcrProcessing(true);
     setMarkdownContent("");
     setCurrentImageIndex(0);

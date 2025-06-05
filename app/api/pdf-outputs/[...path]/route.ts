@@ -10,7 +10,6 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   const path = (await params).path;
-  console.log('Received slug:', path);
   const filePath = join(process.cwd(), 'public', 'pdf-outputs', ...path);
 
   // 检查文件是否存在且为文件
