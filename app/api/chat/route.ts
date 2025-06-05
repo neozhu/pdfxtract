@@ -5,7 +5,7 @@ import path from 'path';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
-const GEMINI_MODEL = "gemini-2.5-flash-preview-05-20"
+const GEMINI_MODEL = "gemini-2.5-pro-preview-05-06"
 export async function POST(req: Request) {
   const {prompt} = await req.json();
   console.log("Request body:", prompt);
