@@ -28,6 +28,7 @@ export async function POST(req: Request) {
             type: 'text',
             text: `Transcribe all visible text from the uploaded image into Markdown, precisely replicating the original visual layout and formatting. This includes:
 * Correcting any rotation or skew so that text is properly oriented before transcription
+* Do not convert or recognize the content as HTML code. Always use Markdown to represent all text and structure.
 * Exact line breaks
 * Indentation and alignment
 * Relative positions of text blocks
