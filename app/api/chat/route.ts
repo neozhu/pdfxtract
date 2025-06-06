@@ -36,9 +36,9 @@ export async function POST(req: Request) {
         content: [
           {
             type: 'text',
-            text: `Transcribe all visible text from the uploaded image into Markdown, precisely replicating the original visual layout and formatting. This includes:
+            text: `Technical document OCR: Extract text content from document image maintaining original structure and formatting, This includes:
 * Correcting any rotation or skew so that text is properly oriented before transcription.
-* If the image contains calligraphy works or ancient books (including manuscripts, rubbings, etc.), please transcribe the text following modern reading order (horizontal rows, left-to-right), while preserving the original text structure, paragraphing, and relative layout. Do not retain the ancient reading order (such as vertical right-to-left columns); adapt it to standard modern reading order for clarity and usability.
+* If the image contains calligraphy, historical books, manuscripts, or rubbings, please transcribe the text following modern reading order (horizontal rows, left-to-right). Preserve the original paragraph structure and relative layout for clarity and usability. Do not use traditional reading orders such as vertical right-to-left columns.
 * Do not convert or recognize the content as HTML code. Always use Markdown to represent all text and structure.
 * Exact line breaks
 * Indentation and alignment
