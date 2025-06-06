@@ -29,8 +29,7 @@ export async function POST(req: Request) {
             type: 'text',
             text: `Transcribe all visible text from the uploaded image into Markdown, precisely replicating the original visual layout and formatting. This includes:
 * Correcting any rotation or skew so that text is properly oriented before transcription.
-* If the image contains calligraphy or ancient books (including manuscripts, rubbings, etc.), do NOT rotate or adjust the orientation; transcribe the text exactly as it appears, preserving the original layout and direction.
-* If there are any seals or stamps (including author’s seals, leisure seals, studio seals, collector’s seals, etc.), transcribe and clearly indicate them, describing the type (e.g., name seal, leisure seal, collector’s seal) if possible.
+* If the image contains calligraphy works or ancient books (including manuscripts, rubbings, etc.), please transcribe the text following modern reading order (horizontal rows, left-to-right), while preserving the original text structure, paragraphing, and relative layout. Do not retain the ancient reading order (such as vertical right-to-left columns); adapt it to standard modern reading order for clarity and usability.
 * Do not convert or recognize the content as HTML code. Always use Markdown to represent all text and structure.
 * Exact line breaks
 * Indentation and alignment
