@@ -13,17 +13,20 @@ import "./markdown-styles.css";
 import "katex/dist/katex.min.css";
 import "prismjs/themes/prism.css";
 import { useCompletion } from "@ai-sdk/react";
+import { Model } from "@/lib/models";
 
 interface PDFOcrProcessorProps {
   images: string[];
   file: File | null;
   onError: (error: string | null) => void;
+  model?: Model;
 }
 
 export function PDFOcrProcessor({
   images,
   file,
   onError,
+  model,
 }: PDFOcrProcessorProps) {
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const [markdownContent, setMarkdownContent] = useState<string>("");
@@ -33,6 +36,7 @@ export function PDFOcrProcessor({
   // Use useCompletion to handle streaming responses
   const { complete } = useCompletion({
     api: "/api/chat",
+    body: { model: model?.id, provider:model?.provider }, // Pass model ID to the API
     onFinish: (prompt, completeResponse) => {
       setMarkdownContent((prevContent) =>
         prevContent ? prevContent + "\n\n" + completeResponse : completeResponse
@@ -59,7 +63,6 @@ export function PDFOcrProcessor({
       setIsOcrProcessing(false);
     },
   });
-
   const processNextImage = useCallback(
     async (index: number) => {
       const imageUrl = images[index];
@@ -67,13 +70,12 @@ export function PDFOcrProcessor({
     },
     [images, complete]
   );
-
   // Listen for currentImageIndex changes to process the next page
   useEffect(() => {
     if (isOcrProcessing && currentImageIndex > 0) {
       processNextImage(currentImageIndex);
     }
-  }, [currentImageIndex, isOcrProcessing]);
+  }, [currentImageIndex, isOcrProcessing, processNextImage]);
 
   // Start OCR processing for all images
   const performOcr = useCallback(async () => {

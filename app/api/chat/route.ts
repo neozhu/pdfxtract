@@ -1,26 +1,35 @@
 import { google } from '@ai-sdk/google';
+import { openai} from '@ai-sdk/openai';
 import { streamText } from 'ai';
 import fs from 'fs';
 import path from 'path';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
-// Get model from environment variable or use default
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash"
-export async function POST(req: Request) {
-  const {prompt} = await req.json();
-  console.log('GEMINI_MODEL:',GEMINI_MODEL);
 
+export async function POST(req: Request) {
+  const {prompt,model,provider} = await req.json();
+  console.log('MODEL:',model);
+  console.log('PROVIDER:',provider);
   const content = prompt; // Assuming content is directly in the request body
   // Extract the image path from content
   const imagePath = content.startsWith('/api/pdf-outputs/')
     ? content.replace('/api/pdf-outputs/', '')
-    : content;  console.log("Image path:", imagePath);
+    : content;  
+  console.log("Image path:", imagePath);
   // Read the image file from public directory
   const imageData = fs.readFileSync(path.join(process.cwd(), 'public', 'pdf-outputs', imagePath));
-  console.log("Image data length:", imageData.length);
+  console.log("Image data length:", imageData.length);  // Select model provider based on the provider parameter
+  let modelProvider;
+  if (provider === 'openai') {
+    modelProvider = openai(model);
+  } else {
+    // Default to Google if provider is not specified or is 'google'
+    modelProvider = google(model);
+  }
+
   const result = await streamText({
-    model: google(GEMINI_MODEL),
+    model: modelProvider,
     messages: [
       {
         role: 'user',

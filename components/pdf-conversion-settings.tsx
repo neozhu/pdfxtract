@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Model, MODELS } from "@/lib/models";
 
 // Helper function to get status text based on progress
 const getProgressStatus = (progress: number): string => {
@@ -28,6 +29,8 @@ interface PDFConversionSettingsProps {
   converting: boolean;
   progress: number;
   onConvert: () => void;
+  selectedModel?: Model;
+  onModelChange?: (model: Model) => void;
 }
 
 export function PDFConversionSettings({
@@ -35,7 +38,9 @@ export function PDFConversionSettings({
   onQualityChange,
   converting,
   progress,
-  onConvert
+  onConvert,
+  selectedModel = MODELS[0],
+  onModelChange = () => {},
 }: PDFConversionSettingsProps) {
   return (
     <div className="space-y-4">
@@ -44,10 +49,7 @@ export function PDFConversionSettings({
           <label className="block text-sm font-medium mb-1">
             Output Quality
           </label>
-          <Select
-            value={quality}
-            onValueChange={onQualityChange}
-          >
+          <Select value={quality} onValueChange={onQualityChange}>
             <SelectTrigger>
               <SelectValue placeholder="Select quality" />
             </SelectTrigger>
@@ -58,12 +60,30 @@ export function PDFConversionSettings({
             </SelectContent>
           </Select>
         </div>
+
+        <div className="w-full">
+          <label className="block text-sm font-medium mb-1">OCR Model</label>
+          <Select
+            value={selectedModel.id}
+            onValueChange={(value) => {
+              const model = MODELS.find((m) => m.id === value);
+              if (model) onModelChange(model);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select OCR model" />
+            </SelectTrigger>
+            <SelectContent>
+              {MODELS.map((model) => (
+                <SelectItem key={model.id} value={model.id}>
+                  {model.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <Button
-        onClick={onConvert}
-        disabled={converting}
-        className="w-full"
-      >
+      <Button onClick={onConvert} disabled={converting} className="w-full">
         {converting ? "Converting..." : "Convert PDF to JPG"}
       </Button>
       {/* Progress Bar */}

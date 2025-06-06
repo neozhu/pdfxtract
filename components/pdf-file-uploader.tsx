@@ -171,7 +171,7 @@ export function PDFFileUploader({ onFileSelect, onError, file: selectedFile, pag
               {files.map((fileItem) => (
                 <div
                   key={fileItem.id}
-                  className="flex items-center gap-3 p-3 border rounded-lg motion-safe:animate-in motion-safe:slide-in-from-top-4"
+                  className="flex items-center gap-3 p-3 border rounded-lg motion-safe:animate-in motion-safe:slide-in-from-top-4 motion-safe:duration-600"
                 >
                   <FileText className="h-8 w-8 text-muted-foreground flex-shrink-0" />
 

@@ -14,7 +14,7 @@ import { PDFConversionSettings } from "@/components/pdf-conversion-settings";
 import { PDFImageHeader } from "@/components/pdf-image-header";
 import { PDFImageCarousel } from "@/components/pdf-image-carousel";
 import { PDFOcrProcessor } from "@/components/pdf-ocr-processor";
-
+import { Model, MODELS } from "@/lib/models";
 // Maximum file size in bytes (50MB)
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
@@ -22,6 +22,7 @@ export function PDFXtract() {
   const [file, setFile] = useState<File | null>(null);
   const [pageCount, setPageCount] = useState(0);
   const [quality, setQuality] = useState<"high" | "medium" | "low">("medium");
+  const [selectedModel, setSelectedModel] = useState<Model>(MODELS[0]);
   const [progress, setProgress] = useState(0);
   const [converting, setConverting] = useState(false);
   const [images, setImages] = useState<string[]>([]);
@@ -129,6 +130,8 @@ export function PDFXtract() {
           {/* Conversion Settings */}
           {file && (
             <PDFConversionSettings
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
               quality={quality}
               onQualityChange={setQuality}
               converting={converting}
@@ -151,6 +154,7 @@ export function PDFXtract() {
 
               {/* OCR Processor Component */}
               <PDFOcrProcessor
+                model={selectedModel}
                 images={images}
                 file={file}
                 onError={handleError}
