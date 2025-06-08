@@ -28,6 +28,16 @@ export function PDFXtract() {
   const [images, setImages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // Handle quality change from PDFConversionSettings
+  const handleQualityChange = (newQuality: "high" | "medium" | "low") => {
+    setQuality(newQuality);
+  };
+
+  // Handle model change from PDFConversionSettings
+  const handleModelChange = (newModel: Model) => {
+    setSelectedModel(newModel);
+  };
+
   // Handle file selection from the PDFFileUploader component
   const handleFileSelect = (selectedFile: File) => {
     // Reset state
@@ -130,10 +140,8 @@ export function PDFXtract() {
           {/* Conversion Settings */}
           {file && (
             <PDFConversionSettings
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
-              quality={quality}
-              onQualityChange={setQuality}
+              onModelChange={handleModelChange}
+              onQualityChange={handleQualityChange}
               converting={converting}
               onConvert={convertToImages}
               progress={progress}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Markdown from "react-markdown";
@@ -33,24 +33,35 @@ export function PDFOcrProcessor({
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const MAX_PAGES = 3; // Maximum number of pages to process
+  const processingRef = useRef(false);
+  
   // Use useCompletion to handle streaming responses
   const { complete } = useCompletion({
     api: "/api/chat",
     body: { model: model?.id, provider:model?.provider }, // Pass model ID to the API
     onFinish: (prompt, completeResponse) => {
+      // Reset processing flag since current processing is done
+      processingRef.current = false;
+      
       setMarkdownContent((prevContent) =>
         prevContent ? prevContent + "\n\n" + completeResponse : completeResponse
       );
-      // Only set the current index to the next one, actual processing is handled by useEffect
+      
       setCurrentImageIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
-        if (nextIndex >= images.length || nextIndex >= MAX_PAGES) {
+        
+        // Process next image if available
+        if (nextIndex < images.length && nextIndex < MAX_PAGES) {
+          // Use setTimeout to avoid immediate recursive calls
+          setTimeout(() => {
+            processNextImage(nextIndex);
+          }, 100);
+          return nextIndex;
+        } else {
           // All pages processed
           setIsOcrProcessing(false);
+          return prevIndex;
         }
-        return nextIndex < images.length && nextIndex < MAX_PAGES
-          ? nextIndex
-          : prevIndex;
       });
     },
     onError: (error) => {
@@ -61,39 +72,51 @@ export function PDFOcrProcessor({
       setErrorMessage(errorMsg);
       onError(errorMsg);
       setIsOcrProcessing(false);
+      processingRef.current = false;
     },
   });
+
   const processNextImage = useCallback(
     async (index: number) => {
+      // Prevent duplicate calls
+      if (processingRef.current) {
+        console.log("Already processing, skipping:", index);
+        return;
+      }
+      
+      if (index >= images.length || index >= MAX_PAGES) {
+        setIsOcrProcessing(false);
+        processingRef.current = false;
+        return;
+      }
+      
+      processingRef.current = true;
       const imageUrl = images[index];
+      console.log("Processing next image:", index);
       await complete(imageUrl);
+      console.log("Done:", index);
     },
-    [images, complete]
+    [images, complete, MAX_PAGES]
   );
-  // Listen for currentImageIndex changes to process the next page
-  useEffect(() => {
-    if (isOcrProcessing && currentImageIndex > 0) {
-      processNextImage(currentImageIndex);
-    }
-  }, [currentImageIndex, isOcrProcessing, processNextImage]);
 
   // Start OCR processing for all images
   const performOcr = useCallback(async () => {
     if (images.length === 0) return;
+    
+    // Reset all states
     setIsOcrProcessing(true);
     setMarkdownContent("");
     setCurrentImageIndex(0);
     setErrorMessage(null);
     onError(null);
+    processingRef.current = false;
+    
+    // Start processing first image
     processNextImage(0);
   }, [
     images,
     onError,
     processNextImage,
-    setIsOcrProcessing,
-    setMarkdownContent,
-    setCurrentImageIndex,
-    setErrorMessage,
   ]);
 
   // Function to download markdown content

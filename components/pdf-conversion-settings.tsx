@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Select,
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Model, MODELS } from "@/lib/models";
+import { getCookie, setCookie } from "@/lib/cookies";
 
 // Helper function to get status text based on progress
 const getProgressStatus = (progress: number): string => {
@@ -24,24 +25,64 @@ const getProgressStatus = (progress: number): string => {
 };
 
 interface PDFConversionSettingsProps {
-  quality: "high" | "medium" | "low";
-  onQualityChange: (value: "high" | "medium" | "low") => void;
   converting: boolean;
   progress: number;
   onConvert: () => void;
-  selectedModel?: Model;
+  onQualityChange?: (value: "high" | "medium" | "low") => void;
   onModelChange?: (model: Model) => void;
 }
 
 export function PDFConversionSettings({
-  quality,
-  onQualityChange,
   converting,
   progress,
   onConvert,
-  selectedModel = MODELS[0],
-  onModelChange = () => {},
+  onQualityChange,
+  onModelChange,
 }: PDFConversionSettingsProps) {
+  // Internal state with cookie persistence
+  const [quality, setQuality] = useState<"high" | "medium" | "low">("medium");
+  const [selectedModel, setSelectedModel] = useState<Model>(MODELS[0]);
+
+  // Load settings from cookies on component mount
+  useEffect(() => {
+    let currentQuality = quality;
+    let currentModel = selectedModel;
+
+    // Load quality setting from cookie
+    const savedQuality = getCookie("pdf-quality") as "high" | "medium" | "low";
+    if (savedQuality && ["high", "medium", "low"].includes(savedQuality)) {
+      setQuality(savedQuality);
+      currentQuality = savedQuality;
+    }
+
+    // Load model setting from cookie
+    const savedModelId = getCookie("pdf-model");
+    if (savedModelId) {
+      const savedModel = MODELS.find(model => model.id === savedModelId);
+      if (savedModel) {
+        setSelectedModel(savedModel);
+        currentModel = savedModel;
+      }
+    }
+
+    // Notify parent of the initial/loaded values
+    onQualityChange?.(currentQuality);
+    onModelChange?.(currentModel);
+  }, []);
+
+  // Handle quality change with cookie saving
+  const handleQualityChange = (newQuality: "high" | "medium" | "low") => {
+    setQuality(newQuality);
+    setCookie("pdf-quality", newQuality);
+    onQualityChange?.(newQuality);
+  };
+
+  // Handle model change with cookie saving
+  const handleModelChange = (newModel: Model) => {
+    setSelectedModel(newModel);
+    setCookie("pdf-model", newModel.id);
+    onModelChange?.(newModel);
+  };
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
@@ -49,7 +90,7 @@ export function PDFConversionSettings({
           <label className="block text-sm font-medium mb-1">
             Output Quality
           </label>
-          <Select value={quality} onValueChange={onQualityChange}>
+          <Select value={quality} onValueChange={handleQualityChange}>
             <SelectTrigger>
               <SelectValue placeholder="Select quality" />
             </SelectTrigger>
@@ -67,7 +108,7 @@ export function PDFConversionSettings({
             value={selectedModel.id}
             onValueChange={(value) => {
               const model = MODELS.find((m) => m.id === value);
-              if (model) onModelChange(model);
+              if (model) handleModelChange(model);
             }}
           >
             <SelectTrigger>
