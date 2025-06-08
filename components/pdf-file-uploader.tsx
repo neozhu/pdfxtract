@@ -28,6 +28,7 @@ interface FileWithProgress {
   status: "pending" | "uploading" | "completed" | "error";
   id: string;
   error?: string;
+  isRemoving?: boolean;
 }
 
 const formatFileSize = (bytes: number) => {
@@ -122,9 +123,17 @@ export function PDFFileUploader({ onFileSelect, onError, file: selectedFile, pag
     multiple: false,
   });
   const removeFile = () => {
-    setFiles([]);
-    onFileSelect(null as unknown as File); // Clear the selected file
-    onError(null);
+    // First set removing state to trigger exit animation
+    setFiles(prevFiles => 
+      prevFiles.map(file => ({ ...file, isRemoving: true }))
+    );
+    
+    // After animation duration, actually remove the file
+    setTimeout(() => {
+      setFiles([]);
+      onFileSelect(null as unknown as File); // Clear the selected file
+      onError(null);
+    }, 300); // Match the animation duration
   };
   return (
     <div className="w-full space-y-4">
@@ -171,7 +180,12 @@ export function PDFFileUploader({ onFileSelect, onError, file: selectedFile, pag
               {files.map((fileItem) => (
                 <div
                   key={fileItem.id}
-                  className="flex items-center gap-3 p-3 border rounded-lg motion-safe:animate-in motion-safe:slide-in-from-top-4 motion-safe:duration-600"
+                  className={cn(
+                    "flex items-center gap-3 p-3 border rounded-lg transition-all duration-300 ease-in-out",
+                    fileItem.isRemoving 
+                      ? "motion-safe:animate-out motion-safe:slide-out-to-right-4 motion-safe:fade-out motion-safe:duration-300" 
+                      : "motion-safe:animate-in motion-safe:slide-in-from-top-4 motion-safe:fade-in motion-safe:duration-300"
+                  )}
                 >
                   <FileText className="h-8 w-8 text-muted-foreground flex-shrink-0" />
 

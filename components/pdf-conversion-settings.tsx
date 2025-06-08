@@ -84,9 +84,9 @@ export function PDFConversionSettings({
     onModelChange?.(newModel);
   };
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 motion-safe:animate-in motion-safe:slide-in-from-bottom-4 motion-safe:fade-in motion-safe:duration-500">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-        <div className="w-full">
+        <div className="w-full motion-safe:animate-in motion-safe:slide-in-from-left-4 motion-safe:fade-in motion-safe:duration-300 motion-safe:delay-100">
           <label className="block text-sm font-medium mb-1">
             Output Quality
           </label>
