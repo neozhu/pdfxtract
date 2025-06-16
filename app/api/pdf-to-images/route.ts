@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const quality = (formData.get('quality') as string) || 'medium';
+    const format = (formData.get('format') as string) || 'jpg';
     
     if (!file) {
       return NextResponse.json(
@@ -38,9 +39,8 @@ export async function POST(request: Request) {
     // 获取PDF缓冲区
     const buffer = Buffer.from(await file.arrayBuffer());
     try {
-      // 创建 web 可访问的静态目录（如 public/pdf-outputs/uuid）
+      // 创建输出目录
       const outputBaseDir = path.join(process.cwd(), 'public', 'pdf-outputs');
-      // 获取原始文件名（去除扩展名）
       const baseName = path.basename(file.name, path.extname(file.name));
       const outputDir = path.join(outputBaseDir, baseName);
       fs.mkdirSync(outputDir, { recursive: true });
@@ -49,15 +49,14 @@ export async function POST(request: Request) {
       const settings = qualitySettings[quality as keyof typeof qualitySettings];
       const options = {
         density: settings.density,
-        compression: 'jpeg',
         saveFilename: 'page',
         savePath: outputDir,
-        format: 'jpg',
+        format: format,
         width: settings.width,
         preserveAspectRatio: true,
         background: 'white',
         flatten: true,
-        alpha: 'remove',
+        alpha: format === 'png' ? 'keep' : 'remove', // PNG 保留透明度
         colorspace: 'sRGB',
         interpolate: 'bilinear',
         antialias: true,
@@ -71,22 +70,25 @@ export async function POST(request: Request) {
         ]
       };
 
-      // 使用pdf2pic进行批量转换（只需一次）
-      const convert = fromBuffer(buffer, options);
-      await convert.bulk(-1); // -1 转换所有页面，已自动保存到 outputDir
+      // 格式特定的设置
+      // pdf2pic 会根据 format 参数自动处理输出格式
+      // 不需要额外设置 compression 属性
 
-      // 读取 outputDir 下所有 jpg 文件，按页码排序
+      // 使用pdf2pic进行批量转换
+      const convert = fromBuffer(buffer, options);
+      await convert.bulk(-1);
+
+      // 读取输出目录下所有图片文件
       const files = fs.readdirSync(outputDir)
-        .filter(f => f.endsWith('.jpg'))
+        .filter(f => f.endsWith(`.${format}`))
         .sort((a, b) => {
-          // 提取数字进行排序
           const numA = parseInt(a.match(/(\d+)/)?.[1] || '0', 10);
           const numB = parseInt(b.match(/(\d+)/)?.[1] || '0', 10);
           return numA - numB;
         });
       const imagePaths = files.map(f => `/api/pdf-outputs/${baseName}/${f}`);
 
-      // 返回图片路径数组（web 可访问路径）
+      // 返回图片路径数组
       return NextResponse.json({ imagePaths });
     } catch (conversionError) {
       console.error('PDF conversion error:', conversionError);
@@ -103,3 +105,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

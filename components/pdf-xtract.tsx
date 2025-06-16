@@ -22,6 +22,7 @@ export function PDFXtract() {
   const [file, setFile] = useState<File | null>(null);
   const [pageCount, setPageCount] = useState(0);
   const [quality, setQuality] = useState<"high" | "medium" | "low">("medium");
+  const [format, setFormat] = useState<"jpg" | "png">("jpg");
   const [selectedModel, setSelectedModel] = useState<Model>(MODELS[0]);
   const [progress, setProgress] = useState(0);
   const [converting, setConverting] = useState(false);
@@ -36,6 +37,11 @@ export function PDFXtract() {
   // Handle model change from PDFConversionSettings
   const handleModelChange = (newModel: Model) => {
     setSelectedModel(newModel);
+  };
+
+  // Handle format change from PDFConversionSettings
+  const handleFormatChange = (newFormat: "jpg" | "png") => {
+    setFormat(newFormat);
   };
 
   // Handle file selection from the PDFFileUploader component
@@ -68,12 +74,13 @@ export function PDFXtract() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("quality", quality);
+      formData.append("format", format);
 
       setProgress(10);
 
       try {
-        // Call our API to convert PDF to JPG images and get image paths
-        const response = await fetch("/api/pdf-to-jpg", {
+        // Call our API to convert PDF to images and get image paths
+        const response = await fetch("/api/pdf-to-images", {
           method: "POST",
           body: formData,
         });
@@ -97,8 +104,8 @@ export function PDFXtract() {
         setPageCount(data.imagePaths.length); // 这里用实际转换后的图片数
         setProgress(100);
       } catch (apiError) {
-        console.error("Error calling PDF to JPG conversion API:", apiError);
-        setError("Error during JPG conversion on the server. Please try again.");
+        console.error("Error calling PDF to images conversion API:", apiError);
+        setError("Error during image conversion on the server. Please try again.");
         setProgress(0);
       }
     } catch (err) {
@@ -115,13 +122,15 @@ export function PDFXtract() {
       <CardHeader>
         <CardTitle>
           <p
-            className="motion-safe:motion-opacity-in-[0%] motion-safe:motion-blur-in-[5px] motion-safe:motion-ease-spring-smooth"
+            className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:delay-300"
           >
             Advanced Document Digitization & Text Extraction Suite
           </p>
         </CardTitle>
         <CardDescription>
-          <p className="motion-safe:animate-in motion-opacity-in-[0%] motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:delay-350 motion-safe:from-0 motion-safe:to-1">
+          <p
+            className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:delay-300"
+          >
             Transform your scanned documents into digital assets with our professional PDF processing engine (supports up to {MAX_FILE_SIZE / (1024 * 1024)}MB). Our system renders each page as high-fidelity JPEG images while leveraging state-of-the-art optical character recognition technology to extract structured text content in clean Markdown format.
           </p>
         </CardDescription>
@@ -142,6 +151,7 @@ export function PDFXtract() {
             <PDFConversionSettings
               onModelChange={handleModelChange}
               onQualityChange={handleQualityChange}
+              onFormatChange={handleFormatChange}
               converting={converting}
               onConvert={convertToImages}
               progress={progress}

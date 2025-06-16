@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -9,11 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Model, MODELS } from "@/lib/models";
 import { getCookie, setCookie } from "@/lib/cookies";
+import { MODELS, type Model } from "@/lib/models";
 
 // Helper function to get status text based on progress
 const getProgressStatus = (progress: number): string => {
@@ -30,6 +29,7 @@ interface PDFConversionSettingsProps {
   onConvert: () => void;
   onQualityChange?: (value: "high" | "medium" | "low") => void;
   onModelChange?: (model: Model) => void;
+  onFormatChange?: (format: "jpg" | "png") => void;
 }
 
 export function PDFConversionSettings({
@@ -38,15 +38,18 @@ export function PDFConversionSettings({
   onConvert,
   onQualityChange,
   onModelChange,
+  onFormatChange,
 }: PDFConversionSettingsProps) {
   // Internal state with cookie persistence
   const [quality, setQuality] = useState<"high" | "medium" | "low">("medium");
   const [selectedModel, setSelectedModel] = useState<Model>(MODELS[0]);
+  const [format, setFormat] = useState<"jpg" | "png">("jpg");
 
   // Load settings from cookies on component mount
   useEffect(() => {
     let currentQuality = quality;
     let currentModel = selectedModel;
+    let currentFormat = format;
 
     // Load quality setting from cookie
     const savedQuality = getCookie("pdf-quality") as "high" | "medium" | "low";
@@ -65,9 +68,17 @@ export function PDFConversionSettings({
       }
     }
 
+    // Load format setting from cookie
+    const savedFormat = getCookie("pdf-format") as "jpg" | "png";
+    if (savedFormat && ["jpg", "png"].includes(savedFormat)) {
+      setFormat(savedFormat);
+      currentFormat = savedFormat;
+    }
+
     // Notify parent of the initial/loaded values
     onQualityChange?.(currentQuality);
     onModelChange?.(currentModel);
+    onFormatChange?.(currentFormat);
   }, []);
 
   // Handle quality change with cookie saving
@@ -82,6 +93,13 @@ export function PDFConversionSettings({
     setSelectedModel(newModel);
     setCookie("pdf-model", newModel.id);
     onModelChange?.(newModel);
+  };
+
+  // Handle format change with cookie saving
+  const handleFormatChange = (newFormat: "jpg" | "png") => {
+    setFormat(newFormat);
+    setCookie("pdf-format", newFormat);
+    onFormatChange?.(newFormat);
   };
   return (
     <div className="space-y-4 motion-safe:animate-in motion-safe:slide-in-from-bottom-4 motion-safe:fade-in motion-safe:duration-500">
@@ -101,7 +119,20 @@ export function PDFConversionSettings({
             </SelectContent>
           </Select>
         </div>
-
+        <div className="w-full motion-safe:animate-in motion-safe:slide-in-from-right-4 motion-safe:fade-in motion-safe:duration-300 motion-safe:delay-100">
+          <label className="block text-sm font-medium mb-1">
+            Output Format
+          </label>
+          <Select value={format} onValueChange={handleFormatChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select format" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="jpg">JPG (Smaller size)</SelectItem>
+              <SelectItem value="png">PNG (Better quality)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="w-full">
           <label className="block text-sm font-medium mb-1">OCR Model</label>
           <Select
@@ -125,7 +156,7 @@ export function PDFConversionSettings({
         </div>
       </div>
       <Button onClick={onConvert} disabled={converting} className="w-full">
-        {converting ? "Converting..." : "Convert PDF to JPG"}
+        {converting ? "Converting..." : `Convert PDF to ${format.toUpperCase()}`}
       </Button>
       {/* Progress Bar */}
       {(converting || progress > 0) && (
