@@ -7,11 +7,11 @@ import * as path from 'path';
 const qualitySettings = {
   high: {
     width: 1200,
-    density: 300,
+    density: 150,
   },
   medium: {
     width: 1024,
-    density: 200,
+    density: 150,
   },
   low: {
     width: 768,
@@ -54,7 +54,21 @@ export async function POST(request: Request) {
         savePath: outputDir,
         format: 'jpg',
         width: settings.width,
-        preserveAspectRatio: true
+        preserveAspectRatio: true,
+        background: 'white',
+        flatten: true,
+        alpha: 'remove',
+        colorspace: 'sRGB',
+        interpolate: 'bilinear',
+        antialias: true,
+        render: 'intent=relative',
+        gravity: 'center',
+        extent: `${settings.width}x${Math.round(settings.width * 1.414)}`,
+        define: [
+          'pdf:use-cropbox=true',
+          'pdf:use-trimbox=true',
+          'pdf:fit-page=true'
+        ]
       };
 
       // 使用pdf2pic进行批量转换（只需一次）
