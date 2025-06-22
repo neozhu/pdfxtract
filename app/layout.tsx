@@ -18,11 +18,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PDFXtract - Scanned PDF OCR & Text Extraction Tool",
+  title: "PDFXtract - PDF & Image OCR Text Extraction Tool",
   description:
-    "Process scanned PDF documents with high-precision OCR. Convert each page to JPEG, then use advanced AI to extract and output text content in Markdown format, preserving original layout and formatting.",
+    "Process scanned PDF documents and images with high-precision OCR. Convert PDF pages to images or directly process image files, then use advanced AI to extract and output text content in Markdown format, preserving original layout and formatting.",
   keywords:
-    "PDF OCR, scanned PDF, text extraction, PDF to JPG, PDF to Markdown, AI OCR, Gemini AI, layout preservation, document digitization",
+    "PDF OCR, scanned PDF, text extraction, PDF to JPG, PDF to Markdown, AI OCR, Gemini AI, layout preservation, document digitization, multi-file processing, batch processing",
   authors: [{ name: "PDFXtract Team" }],
   openGraph: {
     type: "website",
